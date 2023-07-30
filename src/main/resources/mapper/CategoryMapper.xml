@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.atstudy.mapper.CategoryMapper">
+    <insert id="insertByCategory">
+        insert into category (cate_name,cate_sort,createtime,updatetime,cate_parentid)
+        values
+        (#{category.cateName},#{category.cateSort},#{category.createtime},#{category.updatetime},#{category.cateParentid})
+    </insert>
+    <update id="updateByCategory">
+        update category set
+        cate_name = #{category.cateName},
+        cate_sort = #{category.cateSort},
+        updatetime = #{category.updatetime},
+        cate_parentid = #{category.cateParentid}
+        where
+        cate_id = #{category.cateId}
+    </update>
+    <select id="listByCategoryBo" resultMap="category">
+        select * from category
+        <where>
+            <if test="categoryBo.cateId != null">
+                cate_id = #{categoryBo.cateId}
+            </if>
+            <if test="categoryBo.cateName != null and categoryBo.cateName.length > 0">
+                and cate_name like '%${categoryBo.cateName}%'
+            </if>
+            <if test="categoryBo.cateParentid != null and categoryBo.cateParentid != -1">
+                and cate_parentid = #{categoryBo.cateParentid}
+            </if>
+        </where>
+        limit
+            #{pageBo.startIndex},#{pageBo.pageSize}
+    </select>
+
+    <resultMap id="category" type="com.atstudy.pojo.Category">
+        <result property="cateId" column="cate_id"/>
+        <result property="cateName" column="cate_name"/>
+        <result property="cateSort" column="cate_sort"/>
+        <result property="createtime" column="createtime"/>
+        <result property="updatetime" column="updatetime"/>
+        <result property="cateChannel" column="cate_channel"/>
+        <result property="cateParentid" column="cate_parentid"/>
+        <association property="category" column="cate_parentid"
+                     javaType="com.atstudy.pojo.Category"
+                     select="com.atstudy.mapper.CategoryMapper.selectByCateId"/>
+    </resultMap>
+
+    <select id="countByCategoryBo" resultType="java.lang.Long">
+        select count(*) from category
+        <where>
+            <if test="categoryBo.cateId != null">
+                cate_id = #{categoryBo.cateId}
+            </if>
+            <if test="categoryBo.cateName != null and categoryBo.cateName.length > 0">
+                and cate_name like '%${categoryBo.cateName}%'
+            </if>
+            <if test="categoryBo.cateParentid != null and categoryBo.cateParentid != -1">
+                and cate_parentid = #{categoryBo.cateParentid}
+            </if>
+        </where>
+    </select>
+    <select id="selectByCateId" resultMap="category">
+        select * from category where cate_id = #{cateId}
+    </select>
+    <select id="list" resultMap="category">
+        select cate_id,cate_name from category
+    </select>
+    <select id="selectByCateName" resultType="java.lang.Integer">
+        select count(*) from category where cate_name = #{cateName}
+    </select>
+    <select id="findByCateId" resultMap="category">
+        select * from category where cate_id = #{cateId}
+    </select>
+
+</mapper>

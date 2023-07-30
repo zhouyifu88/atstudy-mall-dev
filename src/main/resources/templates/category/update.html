@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>修改分类</title>
+    <script th:src="@{/js/jquery-3.6.0.min.js}"></script>
+    <script th:src="@{/js/bootstrap-4.6.1.min.js}"></script>
+    <script th:src="@{/js/global.js}"></script>
+    <link th:href="@{/css/bootstrap-4.6.1.min.css}" rel="stylesheet">
+</head>
+<body>
+<form th:action="@{/category/alter}" method="post" name="form1">
+    <div class="input-group my-2">
+        <div class="input-group-prepend">
+            <div class="input-group-text">分类序号</div>
+        </div>
+        <input class="form-control" name="cateId" th:value="${category.cateId}" readonly>
+    </div>
+    <div class="input-group my-2">
+        <div class="input-group-prepend">
+            <div class="input-group-text">分类名称</div>
+        </div>
+        <input class="form-control" name="cateName" th:value="${category.cateName}">
+    </div>
+    <div class="role-info"></div>
+    <div class="input-group my-2">
+        <div class="input-group-prepend">
+            <div class="input-group-text">分类编号</div>
+        </div>
+        <input class="form-control" name="cateSort" th:value="${category.cateSort}">
+    </div>
+    <div class="row">
+        <div class="col-4">
+            <div class="input-group">
+                <div class="input-group-prepend">
+                    <div class="input-group-text">父级分类</div>
+                </div>
+                <select class="form-control" name="cateParentid">
+                    <option value="-1">选择父级分类</option>
+                    <option th:each="cate:${list}"
+                            th:value="${cate.cateId}"
+                            th:text="${cate.cateName}"
+                            th:selected="${cate.cateId}==${category.category==null?'null':category.category.cateId}"></option>
+                </select>
+            </div>
+        </div>
+    </div>
+    <div class="my-2">
+        <button type="submit" class="btn btn-primary">保存分类</button>
+    </div>
+</form>
+<div style="height:100px"></div>
+</body>
+<script>
+    //判断角色名是否已存在
+    $("input[name='cateName']").change(function(){
+        $.ajax({
+            url : "/category/validate",
+            type : "GET",
+            data : {cateName : $(this).val()},
+            success : function(data){
+                if(data == "true"){
+                    $(".role-info").html("<font color='red'>分类已存在</font>")
+                }else{
+                    $(".role-info").html("<font color='green'>分类名可用</font>")
+                }
+            }
+        })
+    })
+</script>
+</html>

@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>修改商品</title>
+    <script th:src="@{/js/jquery-3.6.0.min.js}"></script>
+    <script th:src="@{/js/bootstrap-4.6.1.min.js}"></script>
+    <link th:href="@{/css/bootstrap-4.6.1.min.css}" rel="stylesheet">
+    <!--ueditor配置文件-->
+    <script th:src="@{/edit/ueditor.config.js}"></script>
+    <!--ueditor核心-->
+    <script th:src="@{/edit/ueditor.all.js}"></script>
+    <!--中文语言包-->
+    <script th:src="@{/edit/zh-cn.js}"></script>
+</head>
+<body>
+<form th:action="@{/spu/alter}" method="post">
+    <div class="container-fluid">
+        <div class="input-group my-2">
+            <div class="input-group-prepend">
+                <div class="input-group-text">商品编号</div>
+            </div>
+            <input type="text" class="form-control" name="spuId" th:value="${spu.spuId}" readonly>
+        </div>
+        <div class="input-group my-2">
+            <div class="input-group-prepend">
+                <div class="input-group-text">商品名称</div>
+            </div>
+            <input type="text" class="form-control" name="spuName" th:value="${spu.spuName}">
+        </div>
+        <div class="input-group my-2">
+            <div class="input-group-prepend">
+                <div class="input-group-text">商品标题</div>
+            </div>
+            <input type="text" class="form-control" name="spuTitle" th:value="${spu.spuTitle}">
+        </div>
+        <div class="input-group my-2">
+            <div class="input-group-prepend">
+                <div class="input-group-text">商品状态</div>
+            </div>
+            <select name="spuStatus" class="form-control">
+                <option value="-1">请选择商品状态</option>
+                <option th:selected="${spu.spuStatus==1}" value="1">上架</option>
+                <option th:selected="${spu.spuStatus==0}" value="0">下架</option>
+            </select>
+        </div>
+        <div class="input-group my-2">
+            <div class="input-group-prepend">
+                <div class="input-group-text">商品品牌</div>
+            </div>
+            <select name="spuBrandId" class="form-control">
+                <option value="-1">请选择商品品牌</option>
+                <option th:each="brand:${brandList}"
+                        th:value="${brand.brandId}"
+                        th:text="${brand.brandName}"
+                        th:selected="${spu.spuBrandId}==${brand.brandId}"></option>
+            </select>
+        </div>
+        <button type="button" class="btn btn-success my-2 add-role">+商品分类</button>
+        <div class="row role-list">
+            <div class="col-4 d-flex role my-2" th:each="cateId:${cateIdList}">
+                <select name="cateList[0].cateId" class="form-control select-role">
+                    <option value="-1">请选择商品分类</option>
+                    <option th:each="cate:${cateList}"
+                            th:value="${cate.cateId}"
+                            th:text="${cate.cateName}"
+                            th:selected="${cateId}==${cate.cateId}"></option>
+                </select>
+                <button type="button" class="btn btn-danger btn-del">-</button>
+            </div>
+        </div>
+        <div class="input-group my-2">
+            <div class="input-group-prepend">
+                <div class="input-group-text">商品介绍</div>
+            </div>
+            <textarea id="info" name="spuIntroduction" th:text="${spu.spuIntroduction}" aria-label="With textarea"></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary my-4">保存商品</button>
+    </div>
+</form>
+<div style="height:100px"></div>
+</body>
+
+<script>
+    // 在script标签中将目标文本域标签替换成富文本编辑器
+    let editor = UE.getEditor('info');
+
+    UE.Editor.prototype._bkGetActionUrl = UE.Editor.prototype.getActionUrl;
+    UE.Editor.prototype.getActionUrl = function(action) {
+    if (action == 'uploadimage'){
+      return '/edit/upload';
+    }else{
+      return this._bkGetActionUrl.call(this, action);
+    }
+    };
+
+    //按下-按钮，减少员工角色选择下拉表
+    $(".btn-del").click(function(){
+        if($(".role").length > 1){
+            $(this).parents(".role").remove()
+            resetIndex()
+        }
+    })
+
+    //按添加角色按钮，新增员工角色下拉列表
+    $(".add-role").click(function(){
+        let clone = $(".role").last().clone(true)
+        clone.appendTo(".role-list")
+        resetIndex()
+    })
+
+    function resetIndex(){
+        $(".role").each(function(index,item){
+            $(this).find(".select-role").prop("name","cateList["+index+"].cateId")
+        })
+    }
+</script>
+</body>
+</html>

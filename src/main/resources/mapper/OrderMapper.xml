@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.atstudy.mapper.OrderMapper">
+    <select id="countSelectByOrderBo" resultType="java.lang.Long">
+        select count(id) from `order`
+        <where>
+            <if test="orderBo.id != null">
+                id = #{orderBo.id}
+            </if>
+            <if test="orderBo.orderNo != null and orderBo.orderNo.length > 0">
+                and order_no = #{orderBo.orderNo}
+            </if>
+            <if test="orderBo.orderStatus != null">
+                and order_status = #{orderBo.orderStatus}
+            </if>
+            <if test="orderBo.orderUserId != null">
+                and order_user_id = #{orderBo.orderUserId}
+            </if>
+        </where>
+    </select>
+    <select id="listByByOrderBo" resultType="com.atstudy.pojo.Order">
+        select * from `order`
+        <where>
+            <if test="orderBo.id != null">
+                id = #{orderBo.id}
+            </if>
+            <if test="orderBo.orderNo != null and orderBo.orderNo.length > 0">
+                and order_no = #{orderBo.orderNo}
+            </if>
+            <if test="orderBo.orderStatus != null">
+                and order_status = #{orderBo.orderStatus}
+            </if>
+            <if test="orderBo.orderUserId != null">
+                and order_user_id = #{orderBo.orderUserId}
+            </if>
+        </where>
+        limit
+            #{pageBo.startIndex},#{pageBo.pageSize}
+    </select>
+</mapper>

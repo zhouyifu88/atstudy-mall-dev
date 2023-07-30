@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.atstudy.mapper.SpuAttrValueMapper">
+    <insert id="insertBatchValue">
+        insert into spu_attr_value(value_name,createtime,updatetime,value_attr_key_id)
+        values
+        <foreach collection="valueList" item="value" separator=",">
+            (#{value.valueName},#{value.createtime},#{value.updatetime},#{value.valueAttrKeyId})
+        </foreach>
+    </insert>
+    <delete id="deleteBatchIds">
+        delete from spu_attr_value where value_attr_key_id in
+        <foreach collection="idList" item="id" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+    </delete>
+    <select id="listByKeyId" resultType="com.atstudy.pojo.SpuAttrValue">
+        select * from spu_attr_value where value_attr_key_id = #{keyId}
+    </select>
+</mapper>

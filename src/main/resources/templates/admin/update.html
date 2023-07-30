@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>员工修改界面</title>
+    <script th:src="@{/js/jquery-3.6.0.min.js}"></script>
+    <script th:src="@{/js/bootstrap-4.6.1.min.js}"></script>
+    <link th:href="@{/css/bootstrap-4.6.1.min.css}" rel="stylesheet">
+</head>
+<body>
+<form method="post" th:action="@{/admin/alter}">
+    <div class="container-fluid">
+        <div class="my-2 input-group">
+            <div class="input-group-prepend">
+                <div class="input-group-text">员工编号</div>
+                <input readonly class="form-control" name="adminId" th:value="${admin.adminId}">
+            </div>
+        </div>
+        <div class="my-2 input-group">
+            <div class="input-group-prepend">
+                <div class="input-group-text">账户名称</div>
+                <input class="form-control" name="adminName" th:value="${admin.adminName}">
+            </div>
+        </div>
+        <div class="my-2 input-group">
+            <div class="input-group-prepend">
+                <div class="input-group-text">员工姓名</div>
+                <input class="form-control" name="adminNickname" th:value="${admin.adminNickname}">
+            </div>
+        </div>
+        <div class="my-2">
+            <button class="btn btn-success add-role" type="button">添加员工角色</button>
+        </div>
+        <div class="row role-list">
+            <div class="role my-2 col-3 d-flex" th:each="adminRole:${admin.roleList}">
+                <select name="roleList[0].roleId" class="form-control select-role">
+                    <option th:each="role:${roleList}"
+                            th:value="${role.roleId}"
+                            th:text="${role.roleName}"
+                            th:selected="${role.roleId}==${adminRole.roleId}"></option>
+                </select>
+                <button type="button" class="btn btn-danger btn-del">-</button>
+            </div>
+        </div>
+        <div class="my-2">
+            <button type="submit" class="btn btn-primary">保存员工</button>
+        </div>
+    </div>
+</form>
+</body>
+
+<script>
+    $(".add-role").click(function(){
+        let clone = $(".role").last().clone(true)
+        clone.appendTo(".role-list")
+    })
+
+    $(".btn-del").click(function(){
+        if($(".role").length > 1){
+            $(this).parents(".role").remove()
+        }
+    })
+
+    resetIndex()
+
+    function resetIndex(){
+        $(".role").each(function(index,item){
+            $(this).find(".select-role").prop("name","roleList["+index+"].roleId")
+        })
+    }
+</script>
+</html>

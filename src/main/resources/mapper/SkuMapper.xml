@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.atstudy.mapper.SkuMapper">
+    <insert id="insertOne">
+        insert into sku
+        (
+        sku_spu_id,
+        sku_name,
+        sku_spuattr,
+        sku_price,
+        sku_originalprice,
+        sku_costprice,
+        sku_quantity,
+        createtime,
+        updatetime
+        )
+        values
+        (
+        #{sku.skuSpuId},
+        #{sku.skuName},
+        #{sku.skuSpuattr},
+        #{sku.skuPrice},
+        #{sku.skuOriginalprice},
+        #{sku.skuCostprice},
+        #{sku.skuQuantity},
+        #{sku.createtime},
+        #{sku.updatetime}
+        )
+    </insert>
+    <update id="updateOne">
+        update sku set
+        sku_spu_id=#{sku.skuSpuId},
+        sku_name=#{sku.skuName},
+        sku_spuattr=#{sku.skuSpuattr},
+        sku_price=#{sku.skuPrice},
+        sku_originalprice=#{sku.skuOriginalprice},
+        sku_costprice=#{sku.skuCostprice},
+        sku_quantity=#{sku.skuQuantity},
+        updatetime=#{sku.updatetime}
+        where
+            sku_id = #{sku.skuId}
+    </update>
+    <select id="listBySearchBo" resultType="com.atstudy.pojo.Sku">
+        select * from sku
+        <where>
+            <if test="searchBo.skuId != null">
+                sku_id = #{searchBo.skuId}
+            </if>
+            <if test="searchBo.skuSpuId != null">
+                and sku_spu_id = #{searchBo.skuSpuId}
+            </if>
+            <if test="searchBo.skuName != null and searchBo.skuName.length > 0">
+                and sku_name like '%${searchBo.skuName}%'
+            </if>
+        </where>
+        limit
+            #{pageBo.startIndex},#{pageBo.pageSize}
+    </select>
+    <select id="countBySearchBo" resultType="java.lang.Long">
+        select count(*) from sku
+        <where>
+            <if test="searchBo.skuId != null">
+                sku_id = #{searchBo.skuId}
+            </if>
+            <if test="searchBo.skuSpuId != null">
+                and sku_spu_id = #{searchBo.skuSpuId}
+            </if>
+            <if test="searchBo.skuName != null and searchBo.skuName.length > 0">
+                and sku_name like '%${searchBo.skuName}%'
+            </if>
+        </where>
+    </select>
+    <select id="findById" resultType="com.atstudy.pojo.Sku">
+        select * from sku where sku_id = #{skuId}
+    </select>
+</mapper>

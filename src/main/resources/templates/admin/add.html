@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>添加员工</title>
+    <script th:src="@{/js/jquery-3.6.0.min.js}"></script>
+    <script th:src="@{/js/bootstrap-4.6.1.min.js}"></script>
+    <link th:href="@{/css/bootstrap-4.6.1.min.css}" rel="stylesheet">
+</head>
+<body>
+<form th:action="@{/admin/save}" method="post">
+    <div class="container-fluid">
+        <div class="input-group my-2">
+            <div class="input-group-prepend">
+                <div class="input-group-text">账户名称</div>
+            </div>
+            <input type="text" class="form-control" name="adminName" placeholder="请输入账户名称">
+        </div>
+        <div class="input-group my-2">
+            <div class="input-group-prepend">
+                <div class="input-group-text">员工姓名</div>
+            </div>
+            <input type="text" class="form-control" name="adminNickname" placeholder="请输入员工名称">
+        </div>
+        <button type="button" class="btn btn-success my-2 add-role">+员工角色</button>
+        <div class="row role-list">
+            <div class="col-3 d-flex role my-2">
+                <select name="roleList[0].roleId" class="form-control select-role">
+                    <option th:each="role:${roleList}"
+                            th:value="${role.roleId}"
+                            th:text="${role.roleName}"></option>
+                </select>
+                <button type="button" class="btn btn-danger btn-del">-</button>
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary my-4">添加员工</button>
+    </div>
+</form>
+</body>
+
+<script>
+    //按下-按钮，减少员工角色选择下拉表
+    $(".btn-del").click(function(){
+        if($(".role").length > 1){
+            $(this).parents(".role").remove()
+            resetIndex()
+        }
+    })
+
+    //按添加角色按钮，新增员工角色下拉列表
+    $(".add-role").click(function(){
+        let clone = $(".role").last().clone(true)
+        clone.appendTo(".role-list")
+        resetIndex()
+    })
+
+    function resetIndex(){
+        $(".role").each(function(index,item){
+            $(this).find(".select-role").prop("name","roleList["+index+"].roleId")
+        })
+    }
+</script>
+</html>

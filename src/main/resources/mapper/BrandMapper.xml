@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.atstudy.mapper.BrandMapper">
+    <delete id="deleteId">
+        delete from brand where brand_id = #{brandId}
+    </delete>
+    <delete id="deleteIds">
+        delete from brand where brand_id in
+        <foreach collection="idList" item="id" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+    </delete>
+    <select id="listByBo" resultType="com.atstudy.pojo.Brand">
+        select
+            a.*
+        from
+            brand a
+        left join
+            brand_categories b
+        on
+            a.brand_id = b.brand_id
+        <where>
+            <if test="searchBo.brandId != null and searchBo.brandId.length > 0">
+                a.brand_id = #{searchBo.brandId}
+            </if>
+            <if test="searchBo.brandName != null and searchBo.brandName.length > 0">
+                and a.brand_name like '%${searchBo.brandName}%'
+            </if>
+            <if test="searchBo.sortno != null">
+                and a.sortno = #{searchBo.sortno}
+            </if>
+            <if test="searchBo.categoryId != null and searchBo.categoryId != -1">
+                and b.category_id = #{searchBo.categoryId}
+            </if>
+        </where>
+        limit
+            #{pageBo.startIndex},#{pageBo.pageSize}
+    </select>
+    <select id="countByBo" resultType="java.lang.Integer">
+        select
+            count(a.brand_id)
+        from
+            brand a
+        left join
+            brand_categories b
+        on
+            a.brand_id = b.brand_id
+        <where>
+            <if test="searchBo.brandId != null and searchBo.brandId.length > 0">
+                a.brand_id = #{searchBo.brandId}
+            </if>
+            <if test="searchBo.brandName != null and searchBo.brandName.length > 0">
+                and a.brand_name like '%${searchBo.brandName}%'
+            </if>
+            <if test="searchBo.sortno != null">
+                and a.sortno = #{searchBo.sortno}
+            </if>
+            <if test="searchBo.categoryId != null and searchBo.categoryId != -1">
+                and b.category_id = #{searchBo.categoryId}
+            </if>
+        </where>
+    </select>
+    <select id="selectByBrandId" resultType="com.atstudy.pojo.Brand">
+        select * from brand where brand_id = #{brandId}
+    </select>
+    <select id="list" resultType="com.atstudy.pojo.Brand">
+        select * from brand
+    </select>
+</mapper>

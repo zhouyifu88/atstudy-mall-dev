@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.atstudy.mapper.AdminMapper">
+    <insert id="insertAdminRole">
+        insert into admin_role(admin_id,role_id)
+        values
+        <foreach collection="adminAddBo.roleList" item="role" separator=",">
+            (#{adminAddBo.adminId},#{role.roleId})
+        </foreach>
+    </insert>
+    <insert id="insertAdmin" keyProperty="adminAddBo.adminId" useGeneratedKeys="true">
+        insert into admin (admin_id,admin_name,admin_pass,admin_nickname)
+        values
+        (#{adminAddBo.adminId},#{adminAddBo.adminName},#{adminAddBo.adminPass},#{adminAddBo.adminNickname})
+    </insert>
+    <update id="updateAdmin">
+        update admin set
+        admin_name = #{adminUpdateBo.adminName},
+        admin_nickname = #{adminUpdateBo.adminNickname}
+        where
+        admin_id = #{adminUpdateBo.adminId}
+    </update>
+    <select id="findByName" resultMap="admin">
+        select * from admin where admin_name = #{adminName}
+    </select>
+    <select id="findResultCountByAdminSearchBo" resultType="java.lang.Long">
+        select
+            count(distinct a.admin_id)
+        from
+            admin a
+        left join
+            admin_role b
+        on
+            a.admin_id = b.admin_id
+        <where>
+            <if test="adminSearchBo.adminId != null">
+                a.admin_id = #{adminSearchBo.adminId}
+            </if>
+            <if test="adminSearchBo.adminName != null and adminSearchBo.adminName.length > 0">
+                and a.admin_name = #{adminSearchBo.adminName}
+            </if>
+            <if test="adminSearchBo.adminNickname != null and adminSearchBo.adminNickname.length > 0">
+                and a.admin_nickname = #{adminSearchBo.adminNickname}
+            </if>
+            <if test="adminSearchBo.roleId != null and adminSearchBo.roleId != -1">
+                and b.role_id = #{adminSearchBo.roleId}
+            </if>
+        </where>
+    </select>
+    <select id="listByAdminBo" resultMap="admin">
+        select
+            distinct a.*
+        from
+            admin a
+        left join
+            admin_role b
+        on
+            a.admin_id = b.admin_id
+        <where>
+            <if test="adminSearchBo.adminId != null">
+                a.admin_id = #{adminSearchBo.adminId}
+            </if>
+            <if test="adminSearchBo.adminName != null and adminSearchBo.adminName.length > 0">
+                and a.admin_name = #{adminSearchBo.adminName}
+            </if>
+            <if test="adminSearchBo.adminNickname != null and adminSearchBo.adminNickname.length > 0">
+                and a.admin_nickname = #{adminSearchBo.adminNickname}
+            </if>
+            <if test="adminSearchBo.roleId != null and adminSearchBo.roleId != -1">
+                and b.role_id = #{adminSearchBo.roleId}
+            </if>
+        </where>
+        limit
+            #{pageBo.startIndex},#{pageBo.pageSize}
+    </select>
+    <select id="findByAdminId" resultMap="admin">
+        select * from admin where admin_id = #{id}
+    </select>
+
+    <resultMap id="admin" type="com.atstudy.pojo.Admin">
+        <result property="adminId" column="admin_id"/>
+        <result property="adminName" column="admin_name"/>
+        <result property="adminPass" column="admin_pass"/>
+        <result property="adminNickname" column="admin_nickname"/>
+        <collection property="roleList" column="admin_id"
+                    ofType="com.atstudy.pojo.Role"
+                    select="com.atstudy.mapper.RoleMapper.listByAdminId"/>
+        <collection property="menuList" column="admin_id"
+                    ofType="com.atstudy.pojo.Menu"
+                    select="com.atstudy.mapper.MenuMapper.listMenuByAdminId"/>
+    </resultMap>
+</mapper>

@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>添加属性</title>
+    <script th:src="@{/js/jquery-3.6.0.min.js}"></script>
+    <script th:src="@{/js/bootstrap-4.6.1.min.js}"></script>
+    <link th:href="@{/css/bootstrap-4.6.1.min.css}" rel="stylesheet">
+</head>
+<body>
+<form th:action="@{/attr/save}" method="post">
+    <div class="container-fluid">
+        <div class="input-group my-2">
+            <div class="input-group-prepend">
+                <div class="input-group-text">属性键名称</div>
+            </div>
+            <input type="text" class="form-control" name="keyName" placeholder="请输入属性键名称">
+        </div>
+        <div class="input-group my-2">
+            <div class="input-group-prepend">
+                <div class="input-group-text">属性分类</div>
+            </div>
+            <select name="keyIssku" class="form-control">
+                <option value="-1">选择属性</option>
+                <option value="1">规格属性</option>
+                <option value="0">筛选属性</option>
+            </select>
+        </div>
+        <div class="input-group my-2">
+            <div class="input-group-prepend">
+                <div class="input-group-text">属性分类</div>
+            </div>
+            <select name="keyIshigh" class="form-control">
+                <option value="-1">选择属性</option>
+                <option value="1">高级属性</option>
+                <option value="0">普通属性</option>
+            </select>
+        </div>
+        <button type="button" class="btn btn-success my-2 add-role">+属性值</button>
+        <div class="row role-list">
+            <div class="col-6 d-flex role my-2 input-group">
+                <div class="input-group-prepend">
+                    <div class="input-group-text">属性值名称</div>
+                </div>
+                <input name="attrValueList[0].valueName" class="form-control select-value">
+                <button type="button" class="btn btn-danger btn-del">-</button>
+            </div>
+        </div>
+        <button type="button" class="btn btn-success my-2 add-brand">+分类</button>
+        <div class="row brand-list">
+            <div class="col-4 d-flex brand my-2 input-group">
+                <div class="input-group-prepend">
+                    <div class="input-group-text">分类</div>
+                </div>
+                <select name="idList" class="form-control select-brand">
+                    <option value="-1">默认分类</option>
+                    <option th:each="cate:${list}"
+                            th:value="${cate.cateId}"
+                            th:text="${cate.cateName}"></option>
+                </select>
+                <button type="button" class="btn btn-danger btn-brand-del">-</button>
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary my-4">添加参数</button>
+    </div>
+</form>
+<div style="height:100px"></div>
+</body>
+
+<script>
+    //按添加分类按钮，新增分类下拉列表
+    $(".add-brand").click(function(){
+        let clone = $(".brand").last().clone(true)
+        clone.appendTo(".brand-list")
+    })
+
+    //按下-按钮，减少员工角色选择下拉表
+    $(".btn-brand-del").click(function(){
+        if($(".brand").length > 1){
+            $(this).parents(".brand").remove()
+        }
+    })
+
+    //按下-按钮，减少员工角色选择下拉表
+    $(".btn-del").click(function(){
+        if($(".role").length > 1){
+            $(this).parents(".role").remove()
+            resetIndex()
+        }
+    })
+
+    //按添加角色按钮，新增员工角色下拉列表
+    $(".add-role").click(function(){
+        let clone = $(".role").last().clone(true)
+        clone.appendTo(".role-list")
+        resetIndex()
+    })
+
+    function resetIndex(){
+        $(".role").each(function(index,item){
+            $(this).find(".select-value").prop("name","attrValueList["+index+"].valueName")
+        })
+    }
+</script>
+</body>
+</html>

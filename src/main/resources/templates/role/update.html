@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>修改角色</title>
+    <script th:src="@{/js/jquery-3.6.0.min.js}"></script>
+    <script th:src="@{/js/bootstrap-4.6.1.min.js}"></script>
+    <script th:src="@{/js/global.js}"></script>
+    <link th:href="@{/css/bootstrap-4.6.1.min.css}" rel="stylesheet">
+</head>
+<body>
+<form th:action="@{/role/alter}" method="post" name="form1">
+    <div class="input-group my-2">
+        <div class="input-group-prepend">
+            <div class="input-group-text">角色编号</div>
+        </div>
+        <input class="form-control" th:value="${role.roleId}" name="roleId" readonly>
+    </div>
+    <div class="input-group my-2">
+        <div class="input-group-prepend">
+            <div class="input-group-text">角色名称</div>
+        </div>
+        <input class="form-control" th:value="${role.roleName}" name="roleName">
+    </div>
+    <div class="role-info my-2"></div>
+    <!--启用栅格布局-->
+    <div class="my-2 row">
+        <!--每个一级权限占二分之一-->
+        <div class="my-2 col-6 " th:each="big:${permissions}" th:if="${big.pid}==null">
+            <div class="card">
+                <!--一级权限-->
+                <div class="card-header" >
+                    <input type="checkbox" name="idList" th:checked="${big.roleId!=null}" th:value="${big.permissionId}" class="big"> <span th:text="${big.permissionName}"></span>
+                </div>
+                <div class="card-body" th:each="mid:${permissions}" th:if="${mid.pid}==${big.permissionId}">
+                    <!--二级权限-->
+                    <div class="my-2 pl-2 ">
+                        <input type="checkbox" name="idList" th:checked="${mid.roleId!=null}" th:value="${mid.permissionId}" class="mid"> <span th:text="${mid.permissionName}"></span>
+                        <!--三级权限-->
+                        <div class="my-2 pl-2 d-flex">
+                            <div class="mx-2" th:each="small:${permissions}" th:if="${small.pid}==${mid.permissionId}">
+                                <input type="checkbox" name="idList" th:checked="${small.roleId!=null}" th:value="${small.permissionId}" class="small"> <span th:text="${small.permissionName}"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="my-2">
+        <button type="submit" class="btn btn-primary">保存角色</button>
+    </div>
+</form>
+<div style="height:100px"></div>
+</body>
+<script>
+    //选中一级时，选中二级加三级，取消一级时，取消二级和三级
+    $(".big").change(function(){
+        if($(this).prop("checked")){
+            $(this).parents(".card").find(".mid,.small").prop("checked",true)
+        }else{
+            $(this).parents(".card").find(".mid,.small").prop("checked",false)
+        }
+    })
+
+    //二级选中时，一级选中，三级的所有选；二级取消时，三级的所有取消，判断是否还有别的二级选中，当没有任何二级选中
+    //当没有任何二级选中的时候，一级取消
+    $(".mid").change(function(){
+        if($(this).prop("checked")==false){
+            $(this).parents(".card-body").find(".small").prop("checked",false)
+        }
+        let flag = false
+        $(this).parents(".card").find(".mid").each(function(){
+            if($(this).prop("checked")){
+                $(this).parents(".card").find(".big").prop("checked",true)
+                flag = true
+            }
+        })
+        if(flag == false){
+            $(this).parents(".card").find(".big").prop("checked",false)
+        }
+    })
+
+    //三级选中时,选中二级和一级，当三级取消勾选时，二级保持勾选
+    $(".small").change(function(){
+        if($(this).prop("checked")){
+            $(this).parents(".card-body").find(".mid").prop("checked",true)
+            $(this).parents(".card").find(".big").prop("checked",true)
+        }
+    })
+
+    //判断角色名是否已存在
+    $("input[name='roleName']").change(function(){
+        $.ajax({
+            url : "/role/validate",
+            type : "GET",
+            data : {roleName : $(this).val()},
+            success : function(data){
+                if(data == "true"){
+                    $(".role-info").html("<font color='red'>该角色名已存在</font>")
+                }else{
+                    $(".role-info").html("<font color='green'>该角色名可用</font>")
+                }
+            }
+        })
+    })
+</script>
+</html>

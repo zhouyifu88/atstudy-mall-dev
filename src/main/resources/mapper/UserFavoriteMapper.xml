@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.atstudy.mapper.UserFavoriteMapper">
+    <select id="countByBo" resultType="java.lang.Long">
+        select count(ufavor_id) from user_favorite
+        <where>
+            <if test="userFavoriteBo.ufavorId != null">
+                ufavor_id = #{userFavoriteBo.ufavorId}
+            </if>
+            <if test="userFavoriteBo.ufavorName != null and userFavoriteBo.ufavorName.length > 0">
+                ufavor_name = #{userFavoriteBo.ufavorName}
+            </if>
+        </where>
+    </select>
+    <select id="listByBo" resultType="com.atstudy.pojo.UserFavorite">
+        select * from user_favorite
+        <where>
+            <if test="userFavoriteBo.ufavorId != null">
+                ufavor_id = #{userFavoriteBo.ufavorId}
+            </if>
+            <if test="userFavoriteBo.ufavorName != null and userFavoriteBo.ufavorName.length > 0">
+                ufavor_name = #{userFavoriteBo.ufavorName}
+            </if>
+        </where>
+        limit
+            #{pageBo.startIndex},#{pageBo.pageSize}
+    </select>
+
+
+</mapper>

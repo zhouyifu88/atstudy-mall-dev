@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.atstudy.mapper.CartMapper">
+    <select id="countByCartBo" resultType="java.lang.Long">
+        select count(car_id) from cart
+        <where>
+            <if test="cartBo.carId != null">
+                car_id = #{cartBo.carId}
+            </if>
+            <if test="cartBo.cartUserid != null">
+                cart_userid = #{cartBo.cartUserid}
+            </if>
+        </where>
+    </select>
+    <select id="listByCartBo" resultType="com.atstudy.pojo.Cart">
+        select * from cart
+        <where>
+            <if test="cartBo.carId != null">
+                car_id = #{cartBo.carId}
+            </if>
+            <if test="cartBo.cartUserid != null">
+                cart_userid = #{cartBo.cartUserid}
+            </if>
+        </where>
+        limit
+            #{pageBo.startIndex},#{pageBo.pageSize}
+    </select>
+</mapper>
