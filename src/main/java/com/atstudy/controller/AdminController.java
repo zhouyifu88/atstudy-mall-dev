@@ -37,7 +37,7 @@ public class AdminController {
         if (result){
             return "redirect:/index/success?message=delete success";
         }else {
-            return "redirect:/index/success?message=delete error";
+            return "redirect:/index/success?message=sorry delete error";
         }
     }
 
